@@ -317,8 +317,11 @@ export default {
         // https://stackoverflow.com/questions/35585421
         // add a space and remove it. it works :/
         if (!this.isIE11) {
-          this.insertHTML("\n " + indentation);
-          document.execCommand("delete", false);
+          if (indentation !== "") this.insertHTML("\n" + indentation);
+          else {
+            this.insertHTML("\n ");
+            document.execCommand("delete", false);
+          }
         } else {
           this.insertHTML("\n" + indentation);
           const r = selectionRange(this.$refs.pre);
