@@ -86,7 +86,8 @@ export default {
       undoTimestamp: 0,
       lastPos: 0,
       codeData: "",
-      composing: false
+      composing: false,
+      isIE11: !!window.navigator.userAgent.match(/Trident.*rv[ :]*11\./)
     };
   },
   watch: {
@@ -145,9 +146,10 @@ export default {
       const currentCursorPos = selectionRange(this.$refs.pre);
 
       // get text representation of clipboard
-      var text = (e.originalEvent || e).clipboardData.getData("Text");
-      // insert text manually
-      document.execCommand("insertHTML", false, escapeHtml(text));
+      const clipboardData =
+        (e.originalEvent || e).clipboardData || window.clipboardData;
+      const text = clipboardData.getData("Text");
+      this.insertHTML(this.isIE11 ? text : escapeHtml(text));
 
       const newCursorPos = currentCursorPos.end + text.length;
       this.selection = { start: newCursorPos, end: newCursorPos };
@@ -283,7 +285,7 @@ export default {
       }
 
       if (evt.keyCode === 9 && !this.ignoreTabKey) {
-        document.execCommand("insertHTML", false, "  ");
+        this.insertHTML("  ");
         evt.preventDefault();
       } else if (evt.keyCode === 8) {
         // Backspace Key
@@ -299,9 +301,11 @@ export default {
           return; // Bail when deindent level defaults to 0
         }
 
-        // Delete chars `deindent` times
-        for (let i = 0; i < deindent; i++) {
-          document.execCommand("delete", false);
+        if (!this.isIE11) {
+          // Delete chars `deindent` times
+          for (let i = 0; i < deindent; i++) {
+            document.execCommand("delete", false);
+          }
         }
 
         evt.preventDefault();
@@ -312,8 +316,15 @@ export default {
 
         // https://stackoverflow.com/questions/35585421
         // add a space and remove it. it works :/
-        document.execCommand("insertHTML", false, "\n " + indentation);
-        document.execCommand("delete", false);
+        if (!this.isIE11) {
+          this.insertHTML("\n " + indentation);
+          document.execCommand("delete", false);
+        } else {
+          this.insertHTML("\n" + indentation);
+          const r = selectionRange(this.$refs.pre);
+          r.start = r.end;
+          selectionRange(this.$refs.pre, r);
+        }
 
         evt.preventDefault();
       } else if (
@@ -375,6 +386,18 @@ export default {
         this.updateContent(plain);
       } else {
         this.undoTimestamp = 0;
+      }
+    },
+    insertHTML(text) {
+      if (this.isIE11) {
+        if (window.getSelection) {
+          window
+            .getSelection()
+            .getRangeAt(0)
+            .insertNode(document.createTextNode(text));
+        }
+      } else {
+        document.execCommand("insertHTML", false, text);
       }
     }
   }

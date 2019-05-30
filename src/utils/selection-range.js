@@ -2,6 +2,7 @@ import iterator from "dom-iterator";
 
 function position(el, pos) {
   var selection = window.getSelection();
+  var isIE11 = !!window.navigator.userAgent.match(/Trident.*rv[ :]*11\./);
 
   if (1 == arguments.length) {
     if (!selection.rangeCount) return;
@@ -10,9 +11,15 @@ function position(el, pos) {
     var clone = range.cloneRange();
     clone.selectNodeContents(el);
     clone.setEnd(range.endContainer, range.endOffset);
-    indexes.end = clone.toString().length;
+    indexes.end = isIE11
+      ? clone.toString().replace(/\r\n/g, "\n").length
+      : clone.toString().length;
     clone.setStart(range.startContainer, range.startOffset);
-    indexes.start = indexes.end - clone.toString().length;
+    indexes.start =
+      indexes.end -
+      (isIE11
+        ? clone.toString().replace(/\r\n/g, "\n").length
+        : clone.toString().length);
     indexes.atStart = clone.startOffset === 0;
     indexes.commonAncestorContainer = clone.commonAncestorContainer;
     indexes.endContainer = clone.endContainer;

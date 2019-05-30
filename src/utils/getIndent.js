@@ -1,4 +1,6 @@
 const getLine = (plain, cursorPos) => {
+  const isIE11 = !!window.navigator.userAgent.match(/Trident.*rv[ :]*11\./);
+  if (isIE11) plain = plain.replace(/\r\n/g, "\n");
   const startSlice = plain.slice(0, cursorPos);
   const lastNewline = startSlice.lastIndexOf("\n") + 1;
   const lineSlice = startSlice.slice(lastNewline);
