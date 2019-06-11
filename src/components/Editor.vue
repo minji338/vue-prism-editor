@@ -323,9 +323,19 @@ export default {
             document.execCommand("delete", false);
           }
         } else {
-          this.insertHTML("\n" + indentation);
+          let dummy = 0;
+          if (indentation !== "") this.insertHTML("\n" + indentation);
+          else {
+            this.insertHTML("\n ");
+            const container = window.getSelection().getRangeAt(0).endContainer;
+            container.innerHTML = container.innerHTML.substring(
+              0,
+              container.innerHTML.length - 1
+            );
+            dummy++;
+          }
           const r = selectionRange(this.$refs.pre);
-          r.start = r.end;
+          r.start = r.end + dummy;
           selectionRange(this.$refs.pre, r);
         }
 
