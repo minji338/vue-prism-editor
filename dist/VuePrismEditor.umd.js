@@ -2065,14 +2065,14 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* harmony default export */ var setPublicPath = (null);
 
-// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"bee7b20a-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/Editor.vue?vue&type=template&id=beaeb37e&
+// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"bee7b20a-vue-loader-template"}!./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ref--0-0!./node_modules/vue-loader/lib??vue-loader-options!./src/components/Editor.vue?vue&type=template&id=6d62bb86&
 var render = function () {
 var _obj;
 var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"prism-editor-wrapper"},[(_vm.lineNumbers)?_c('div',{staticClass:"prism-editor__line-numbers",style:({ 'min-height': _vm.lineNumbersHeight }),attrs:{"aria-hidden":"true"}},[_c('div',{staticClass:"prism-editor__line-width-calc",staticStyle:{"height":"0px","visibility":"hidden","pointer-events":"none"}},[_vm._v("\n      999\n    ")]),_vm._l((_vm.lineNumbersCount),function(line){return _c('div',{key:line,staticClass:"prism-editor__line-number token comment"},[_vm._v("\n      "+_vm._s(line)+"\n    ")])})],2):_vm._e(),_c('pre',{ref:"pre",staticClass:"prism-editor__code",class:( _obj = {}, _obj['language-' + _vm.language] = true, _obj ),attrs:{"contenteditable":!_vm.readonly,"spellCheck":"false","autocapitalize":"off","autocomplete":"off","autocorrect":"off","data-gramm":"false"},domProps:{"innerHTML":_vm._s(_vm.content)},on:{"keydown":_vm.handleKeyDown,"keyup":_vm.handleKeyUp,"click":_vm.handleClick}})])}
 var staticRenderFns = []
 
 
-// CONCATENATED MODULE: ./src/components/Editor.vue?vue&type=template&id=beaeb37e&
+// CONCATENATED MODULE: ./src/components/Editor.vue?vue&type=template&id=6d62bb86&
 
 // EXTERNAL MODULE: ./node_modules/core-js/modules/es6.string.ends-with.js
 var es6_string_ends_with = __webpack_require__("aef6");
@@ -2426,7 +2426,13 @@ var getDeindentLevel = function getDeindentLevel(plain, cursorPos) {
       var clipboardData = (e.originalEvent || e).clipboardData || window.clipboardData;
       var text = clipboardData.getData("Text");
 
-      _this3.insertHTML(_this3.isIE11 ? text : escape_html_default()(text));
+      if (_this3.isIE11) {
+        window.getSelection().getRangeAt(0).deleteContents();
+
+        _this3.insertHTML(text);
+      } else {
+        _this3.insertHTML(escape_html_default()(text));
+      }
 
       var newCursorPos = currentCursorPos.end + text.length;
       _this3.selection = {

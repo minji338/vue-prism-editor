@@ -149,7 +149,15 @@ export default {
       const clipboardData =
         (e.originalEvent || e).clipboardData || window.clipboardData;
       const text = clipboardData.getData("Text");
-      this.insertHTML(this.isIE11 ? text : escapeHtml(text));
+      if (this.isIE11) {
+        window
+          .getSelection()
+          .getRangeAt(0)
+          .deleteContents();
+        this.insertHTML(text);
+      } else {
+        this.insertHTML(escapeHtml(text));
+      }
 
       const newCursorPos = currentCursorPos.end + text.length;
       this.selection = { start: newCursorPos, end: newCursorPos };
