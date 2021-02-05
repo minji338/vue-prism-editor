@@ -1,3 +1,5 @@
+This is a forked version of Vue Prism Editor to support IE11
+
 # Vue Prism Editor
 
 <p align="center">
